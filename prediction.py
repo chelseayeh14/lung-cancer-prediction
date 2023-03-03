@@ -48,7 +48,7 @@ LUNG_CANCER :           YES [Positive] , NO [Negative]
 
 """ Data Import """
 # 匯入 survey lung cancer.csv 
-data = pd.read_csv('survey lung cancer.csv', sep=',', encoding='UTF-8')
+data = pd.read_csv('./data/survey_lung_cancer.csv', sep=',', encoding='UTF-8')
 
 """ Basic Exploration """
 # print(data.shape)           # Shape of The Dataset
