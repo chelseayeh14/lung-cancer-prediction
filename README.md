@@ -26,6 +26,6 @@ Probability of a client’s lung cancer development, which is predicted by our t
 
 ## Project
 
-If you want to read my study, please click this : 🔗 [here](Project_ChelseaYeh.pdf). 
+If you want to read my study, please click this : 🔗 [here](doc/Project_ChelseaYeh.pdf). 
 
 Thanks for reading! 😄
