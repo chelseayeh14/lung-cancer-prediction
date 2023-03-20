@@ -1,6 +1,6 @@
 # Lung Cancer Prediction in Insurance based on Machine Learning 🤖️
 
-I used lung cancer dataset with 7 Machine Learning algorithms to predict probability a person would suffer from Lung Cancer, and applied model to insurance planning procedure with 3 main recommendations. 
+I used lung cancer dataset with 7 Machine Learning algorithms to predict probability a person would suffer from Lung Cancer, and applied model to insurance planning procedure with 3 main recommendations and moderate adjustments based on particular attributes of different individuals.
 
 ## Purpose
 
