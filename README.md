@@ -39,7 +39,6 @@ Target audience includes:
 - Random Forest (balanced)
 - SVM (class weight)
 - XGBoost (scale_pos_weight)
-- Correlation heatmap between features and target
 > ROC Curve saved to: `images/roc_curve.png`
 
 ### Model Selection Logic
