@@ -1,31 +1,72 @@
-# Lung Cancer Prediction in Insurance based on Machine Learning 🤖️
+# 🤖️ Lung Cancer Prediction in Insurance based on Machine Learning 
 
-I used lung cancer dataset with 7 Machine Learning algorithms to predict probability a person would suffer from Lung Cancer, and applied model to insurance planning procedure with 3 main recommendations and moderate adjustments based on particular attributes of different individuals.
+A machine learning-based tool that predicts lung cancer risk using survey data and recommends insurance plans tailored to risk levels.
 
-## Purpose
+## 1. Project Overview
+This project aims to:
+- Predict the likelihood of lung cancer based on lifestyle and symptom inputs
+- Address class imbalance using SMOTE and class_weight
+- Recommend customized insurance coverage based on risk probability
 
-The purpose of this study is to develop a disease prediction model using lung cancer as the disease target, in order to assist the sales agents to provide customization in insurance planning for lung cancer, in order to differentiate from most agents who tend to make fixed recommendations.😊 
+Target audience includes:
+- Individuals concerned about lung health
+- Insurance companies wanting to personalize offerings
+- Health data scientists interested in medical risk modeling
 
-## Procedure. 
+## 2. Data Summary
 
-### 1.Dataset:
-A public dataset of lung cancer patient, which consists of 309 samples, 15 explanatory variables, and 1 response variable, is available on UC Irvine’s Machine Learning Repository. 
+- Source: UCI's Machine Learning Respository
+- Records: 309
+- Target: LUNG CANCER (Yes/No)
+- Input features: 15 (e.g., Age, Gender, Smoking, Wheezing, Chest Pain)
 
-### 2.Data Preprocessing: 
-dropping duplicates, one hot encoding for gender, label encoding for lung cancer and standardization.  
+## 3. EDA Visualization
+- Distribution of Lung Cancer labels
+![Distribution of Lung Cancer labels](images/positive_cases_distribution.png)
+- Correlation heatmap between features and target
+![Correlation](images/correlation_heatmap.png)
+> For full EDA and statistical tests, see: `notebook/eda.ipynb`.
 
-### 3.Modeling: 
-7 models are trained by 80% of samples and evaluated by the rest; among them, Artificial Neural Network (ANN) possesses highest Recall of 97.73% and therefore becomes selected model.  
+## 4. Modeling Pipeline
+### Preprocessing
+- Data cleaning (whitespace, dtypes, encoding)
+- One-hot encoding for gender
+- Feature selection based on statistical relevance
+- Standardization with StandardScaler
 
-![image](model.png)
+### Models Trained: 
+- Logistic Regression (balanced)
+- Random Forest (balanced)
+- SVM (class weight)
+- XGBoost (scale_pos_weight)
+- Correlation heatmap between features and target
+> ROC Curve saved to: `images/roc_curve.png`
 
-### 4.Application: 
-Probability of a client’s lung cancer development, which is predicted by our trained ANN model, is further applied to insurance planning with 3 main recommendations.  
+### Model Selection Logic
+To prioritize **minimizing false negatives**, the final model is selected based on:
+- Recall (50% weight)
+- AUC (25%)
+- F1 Score (15%)
+- Accuracy + Precision (10%)
 
-![image](application.png)
+## 5. Insurance Application
+![Insurance Plans](images/application.png)
 
-## Project
-
-If you want to read my study, please click this : 🔗 [here](doc/Project_ChelseaYeh.pdf). 
+## 6.Folder Structure
+```
+lung-cancer-prediction/
+├── data/                       # Input survey data
+├── modules/                    # Python modules
+│   ├── preprocessing.py        # Clean, encode, scale
+│   ├── modeling.py             # Train, evaluate, select 
+│   └── application.py          # Input collection, prediction, insurance logic
+├── images/                     # ROC plots, EDA images, insurance portfolio
+├── notebook/
+│   └── eda.ipynb               # EDA
+├── report/                     # Analysis Report in Chinese
+├── main.py
+├── .gitignore                  # Excludes data files, environments, etc.
+└── README.md
+```
 
 Thanks for reading! 😄
