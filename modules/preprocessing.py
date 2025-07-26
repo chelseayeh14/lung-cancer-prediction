@@ -3,9 +3,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
 
-def load_and_clean_data(filepath):
+def load_data(filepath):
+
     data = pd.read_csv(filepath)
 
+    return data
+
+def clean_data(data):
     # Strip whitespace from column names
     data.columns = data.columns.str.strip()
 
@@ -30,7 +34,8 @@ def load_and_clean_data(filepath):
     data['GENDER'] = data['GENDER'].astype('category')
 
     # LUNG_CANCER: Yes→1, No→0
-    data['LUNG CANCER'] = data['LUNG CANCER'].str.strip().str.lower().map({'yes': 1, 'no': 0}).astype(int)
+    if 'LUNG CANCER' in data.columns:
+        data['LUNG CANCER'] = data['LUNG CANCER'].str.strip().str.lower().map({'yes': 1, 'no': 0}).astype(int)
 
     return data
 
@@ -38,15 +43,31 @@ def one_hot_encoder(df):
 
     df = pd.get_dummies(df, columns=['GENDER'])
 
+    for col in ['GENDER_F', 'GENDER_M']:
+        if col not in df.columns:
+            df[col] = 0
+
     return df
 
-def selected_features(df):
+def select_features_for_training(df):
 
-    selected_features = ['AGE', 'SMOKING', 'PEER PRESSURE', 
+    selected_features = ['GENDER_M', 'GENDER_F', 'AGE', 
+                         'SMOKING', 'PEER PRESSURE',
                          'ALCOHOL CONSUMING', 'COUGHING', 'WHEEZING',
                          'YELLOW FINGERS', 'ALLERGY', 'FATIGUE',
                          'SWALLOWING DIFFICULTY', 'CHEST PAIN',
-                         'CHRONIC DISEASE', 'LUNG CANCER']
+                         'SHORTNESS OF BREATH', 'CHRONIC DISEASE', 'LUNG CANCER']
+    
+    return df[selected_features]
+
+def select_features_for_prediction(df):
+
+    selected_features = ['GENDER_M','GENDER_F', 'AGE', 
+                         'SMOKING', 'PEER PRESSURE',
+                         'ALCOHOL CONSUMING', 'COUGHING', 'WHEEZING',
+                         'YELLOW FINGERS', 'ALLERGY', 'FATIGUE',
+                         'SWALLOWING DIFFICULTY', 'CHEST PAIN',
+                         'SHORTNESS OF BREATH', 'CHRONIC DISEASE']
     
     return df[selected_features]
 
@@ -77,14 +98,17 @@ def scale_features(X_train, X_test):
 
 def preprocessing(filepath):
     
-    # Load and clean dataset
-    cleaned_data = load_and_clean_data(filepath=filepath)
+    # Load dataset
+    patient_data = load_data(filepath=filepath)
+
+    # Clean dataset
+    cleaned_data = clean_data(patient_data)
 
     # One-Hot Encoding
     encoded_data = one_hot_encoder(cleaned_data)
 
     # Select features based on the results of chi-square test and Pearson correlation analysis
-    selected_features_data = selected_features(encoded_data)
+    selected_features_data = select_features_for_training(encoded_data)
 
     # Split features and target
     X, y = split_features_target(selected_features_data)
@@ -95,4 +119,4 @@ def preprocessing(filepath):
     # Scale features
     X_train_scaled, X_test_scaled, scaler  = scale_features(X_train, X_test)
 
-    return X_train_scaled, X_test_scaled, y_train, y_test
+    return X_train_scaled, X_test_scaled, y_train, y_test, scaler
