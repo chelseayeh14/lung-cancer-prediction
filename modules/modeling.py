@@ -1,41 +1,23 @@
 # modules/modeling.py
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import cross_val_score
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score, roc_curve
 import matplotlib.pyplot as plt
 
-def train_models(X_train, y_train, tune_knn=True, max_k=30, cv=5):
-    selected_models = {
-        "Logistic Regression": LogisticRegression(max_iter=1000),
-        "Random Forest": RandomForestClassifier(),
-        "Naive Bayes": GaussianNB(),
-        "SVM": SVC(probability=True),
-        "KNN": KNeighborsClassifier(),
-        "XGBoost": XGBClassifier(eval_metric='logloss')
+def train_models(X_train, y_train):
+    models = {
+        "Logistic Regression": LogisticRegression(class_weight='balanced', max_iter=1000),
+        "Random Forest": RandomForestClassifier(class_weight='balanced'),
+        "SVM": SVC(class_weight='balanced', probability=True),
+        "XGBoost": XGBClassifier(scale_pos_weight=6.7, eval_metric='logloss', random_state=42)
     }
-    
-    if tune_knn:
-        accuracies = []
-        for k in range(1, max_k + 1):
-            model = KNeighborsClassifier(n_neighbors=k)
-            scores = cross_val_score(model, X_train, y_train, cv=cv)
-            accuracies.append(scores.mean())
 
-        best_k = accuracies.index(max(accuracies)) + 1
-        print(f"\n🔍 Best k for KNN: {best_k} (Cross-val Acc: {max(accuracies):.4f})")
-        selected_models["KNN"] = KNeighborsClassifier(n_neighbors=best_k)
-    else:
-        selected_models["KNN"] = KNeighborsClassifier()
-
-    for name, model in selected_models.items():
+    for name, model in models.items():
         model.fit(X_train, y_train)
 
-    return selected_models
+    return models
 
 def evaluate_models(models, X_test, y_test):
     results = {}
@@ -88,17 +70,17 @@ def plot_roc(models, X_test, y_test):
     plt.title('ROC Curves')
     plt.legend()
     plt.tight_layout()
-    plt.savefig("outputs/roc_curve.png")
+    plt.savefig("images/roc_curve.png")
     plt.close()
 
-def select_best_model_weighted(results, weights=None):
+def select_best_model_weighted(results, models, weights=None):
     if weights is None:
         weights = {
-            'roc_auc': 0.4,
-            'f1_score': 0.3,
-            'accuracy': 0.2,
-            'precision': 0.05,
-            'recall': 0.05
+            'recall': 0.5,
+            'roc_auc': 0.25,
+            'f1_score': 0.15,
+            'accuracy': 0.05,
+            'precision': 0.05
         }
 
     scores = {}
@@ -106,6 +88,7 @@ def select_best_model_weighted(results, weights=None):
         total = sum(metrics[k] * w for k, w in weights.items())
         scores[name] = total
 
-    best = max(scores.items(), key=lambda x: x[1])
-    print(f"\n📌 Best Overall Model: {best[0]} (Score = {best[1]:.2f})")
-    return best[0]
+    best_model_name, best_score = max(scores.items(), key=lambda x: x[1])
+    print(f"\n Best Overall Model: {best_model_name} (Score = {best_score:.2f})")
+
+    return models[best_model_name]
